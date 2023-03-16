@@ -1,0 +1,48 @@
+{
+  "variables": {
+        "service_account_key_file": "variables.json",
+        "folder_id": "variables.json",
+        "source_image_family": "variables.json"
+    },
+
+  "builders": [
+    {
+      "type": "yandex",
+      "service_account_key_file": "{{user `service_account_key_file`}}",
+      "folder_id": "{{user `folder_id`}}",
+      "source_image_family": "ubuntu-1804-lts",
+      "image_name": "ubuntu-1804-docker-{{timestamp}}",
+      "image_description": "Ubuntu 18.04 with Docker pre-installed",
+      "ssh_username": "ubuntu",
+      "use_ipv4_nat": true,
+      "platform_id": "standard-v1",
+      "zone": "ru-central1-a",
+      "ssh_timeout": "20m",
+      "image_labels": {
+        "packer": "true",
+        "created-by": "packer"
+      }
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo apt-get update",
+        "sleep 60",
+        "sudo apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common",
+        "sleep 60",
+        "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
+        "sleep 60",
+        "sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\"",
+        "sleep 60",
+        "sudo apt-get update",
+        "sleep 60",
+        "sudo apt-get install -y docker-ce docker-ce-cli containerd.io",
+        "sleep 60",
+        "sudo usermod -aG docker ubuntu"
+      ]
+    }
+  ]
+}

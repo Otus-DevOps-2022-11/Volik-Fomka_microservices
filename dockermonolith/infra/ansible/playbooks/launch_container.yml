@@ -1,0 +1,17 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Pull Docker image
+      ignore_errors: yes
+      docker_image:
+        name: shortly4000/otus-reddit:1.0
+        source: pull
+
+    - name: Create Docker container
+      docker_container:
+        name: otus-reddit
+        image: shortly4000/otus-reddit:1.0
+        state: started
+        restart_policy: always
+        ports:
+          - "9292:9292"

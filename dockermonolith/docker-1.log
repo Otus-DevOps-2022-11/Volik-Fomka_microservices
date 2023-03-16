@@ -1,0 +1,10 @@
+sudo docker images
+REPOSITORY                 TAG       IMAGE ID       CREATED          SIZE
+yourname/ubuntu-tmp-file   latest    245fbd5b1118   44 seconds ago   63.1MB
+nginx                      latest    904b8cb13b93   13 days ago      142MB
+ubuntu                     18.04     b89fba62bc15   2 weeks ago      63.1MB
+hello-world                latest    feb5d9fea6a5   17 months ago    13.3kB
+
+Задания *
+Образ - это статеческий шаблон на основе которого создюатся контейнеры.
+Контейнер - это работающий экземпляр образа, запущенный с заданными парметрами

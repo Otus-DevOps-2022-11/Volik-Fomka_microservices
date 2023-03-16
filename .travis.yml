@@ -1,0 +1,44 @@
+language: python
+python:
+  - "2.7"
+
+services:
+  - docker
+
+env:
+  - PACKER_LOG=1
+
+jobs:
+  include:
+    - name: "Packer validate"
+      script: packer validate -var-file=packer/variables.json packer/app.json
+    - name: "Terraform validate and tflint - stage"
+      script:
+        - cd terraform/stage
+        - terraform init
+        - terraform validate
+        - tflint
+    - name: "Terraform validate and tflint - prod"
+      script:
+        - cd terraform/prod
+        - terraform init
+        - terraform validate
+        - tflint
+    - name: "Ansible lint"
+      script:
+        - cd ansible
+        - ansible-lint playbooks/*.yml
+    - name: "Docker tests"
+      script:
+        - cd src
+        - docker build -t fomka/post:1.0 .
+        - docker run -d -p 127.0.0.1:8080:8080 fomka/post:1.0
+        - docker ps | grep -q fomka/post
+        - docker stop $(docker ps -q)
+        - docker rm $(docker ps -a -q)
+
+after_success:
+  - echo "Build successful"
+
+after_failure:
+  - echo "Build failed"
