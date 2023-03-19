@@ -1,18 +1,11 @@
-# Build stage
-FROM python:3.6.0-alpine AS build
-
-RUN apk --no-cache add build-base
-
-WORKDIR /app
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Final stage
 FROM python:3.6.0-alpine
 
 WORKDIR /app
-COPY --from=build /app /app
+COPY . /app
+
+RUN apk --no-cache --update add build-base && \
+    pip install --no-cache-dir -r /app/requirements.txt && \
+    apk del build-base
 
 ENV POST_DATABASE_HOST post_db
 ENV POST_DATABASE posts
