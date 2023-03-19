@@ -1,21 +1,15 @@
-# Build stage
-FROM ruby:2.2-alpine AS build
-
-RUN apk --no-cache add build-base
-
-WORKDIR /app
-COPY Gemfile* /app/
-
-RUN bundle install
-
-# Final stage
-FROM ruby:2.2-alpine
+FROM ruby:2.2
+RUN apt-get update -qq \
+  && apt-get install --no-install-recommends -y --force-yes build-essential \
+  && rm -rf /var/lib/apt/lists/*
 
 ENV APP_HOME /app
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
-COPY --from=build /app /
+COPY Gemfile* $APP_HOME/
+RUN bundle install
+COPY . $APP_HOME
 
 ENV COMMENT_DATABASE_HOST comment_db
 ENV COMMENT_DATABASE comments
