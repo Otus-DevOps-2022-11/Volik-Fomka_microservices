@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Start GitLab Runner container
+      docker_container:
+        name: gitlab-runner
+        image: gitlab/gitlab-runner:latest
+        restart_policy: always
+        volumes:
+          - "/srv/gitlab-runner/config:/etc/gitlab-runner"
+          - "/var/run/docker.sock:/var/run/docker.sock"
+
+    - name: Register GitLab Runner
+      docker_container:
+        name: gitlab-runner
+        command: sudo docker exec -it gitlab-runner gitlab-runner register --url http://84.201.174.98/ --non-interactive --locked=false --name DockerRunner --executor docker --docker-image alpine:latest --registration-token GR1348941PEkLjYpKWB1Kc_qMRQQ_ --tag-list "linux,xenial,ubuntu,docker" --run-untagged
+        interactive: true
