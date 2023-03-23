@@ -1,0 +1,21 @@
+# .gitignore
+/packer/variables.json
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform/
+/terraform/prod/backend.tf
+/terraform/stage/backend.tf
+*.retry
+key.json
+jdauphant.nginx
+.vscode/
+# Vagrant & molecule
+.vagrant/
+*.log
+*.pyc
+.molecule
+.cache
+.pytest_cache
+/dockermonolith/infra/terraform/terraform.tfvars

@@ -1,0 +1,20 @@
+language: python
+python:
+  - "3.10.9"
+
+jobs:
+  include:
+    - name: "Packer validate"
+      script: packer validate -var-file=dockermonolith/infra/packer/variables.json dockermonolith/infra/ubuntu18_with_docker.json
+
+    - name: "Terraform validate"
+      script:
+        - cd dockermonolith/infra/terraform
+        - terraform init
+        - terraform validate
+
+after_success:
+  - echo "Build successful"
+
+after_failure:
+  - echo "Build failed"
