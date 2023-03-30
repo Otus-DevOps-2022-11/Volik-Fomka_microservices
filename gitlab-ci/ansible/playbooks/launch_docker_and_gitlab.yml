@@ -1,0 +1,61 @@
+---
+- name: Install and configure GitLab on Ubuntu 18
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Create GitLab directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - /srv/gitlab/config
+        - /srv/gitlab/data
+        - /srv/gitlab/logs
+
+    - name: Create Docker Compose file
+      copy:
+        dest: /srv/gitlab/docker-compose.yml
+        content: |
+          version: '3'
+          services:
+            web:
+              image: 'gitlab/gitlab-ce:latest'
+              restart: always
+              hostname: 'gitlab.example.com'
+              environment:
+                GITLAB_OMNIBUS_CONFIG: |
+                  external_url 'http://84.201.174.98'
+              ports:
+                - '80:80'
+                - '443:443'
+                - '2222:22'
+              volumes:
+                - '/srv/gitlab/config:/etc/gitlab'
+                - '/srv/gitlab/logs:/var/log/gitlab'
+                - '/srv/gitlab/data:/var/opt/gitlab'
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+
+    - name: Start GitLab container
+      command: docker-compose up -d
+      args:
+        chdir: /srv/gitlab
