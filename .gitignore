@@ -19,3 +19,5 @@ jdauphant.nginx
 .cache
 .pytest_cache
 /dockermonolith/infra/terraform/terraform.tfvars
+/home/volik/Documents/Volik-Fomka_microservices/docker/.env
+/home/volik/Documents/Volik-Fomka_microservices/docker/docker_password.txt
