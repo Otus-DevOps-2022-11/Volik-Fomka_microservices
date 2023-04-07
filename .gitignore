@@ -19,3 +19,5 @@ jdauphant.nginx
 .cache
 .pytest_cache
 /dockermonolith/infra/terraform/terraform.tfvars
+.env
+/docker/docker_password.txt
