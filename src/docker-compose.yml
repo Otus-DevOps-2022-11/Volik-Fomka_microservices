@@ -1,0 +1,35 @@
+version: '3.3'
+services:
+  post_db:
+    container_name: post-db
+    image: mongo:3.2
+    volumes:
+      - post_db:/data/db
+    networks:
+      - reddit
+  ui:
+    container_name: ui
+    build: ./ui
+    image: ${USERNAME}/ui:${UIVERSION}
+    ports:
+      - ${REDDITPORT}:9292/tcp
+    networks:
+      - reddit
+  post:
+    container_name: post-py
+    build: ./post-py
+    image: ${USERNAME}/post:${POSTVERSION}
+    networks:
+      - reddit
+  comment:
+    container_name: comment
+    build: ./comment
+    image: ${USERNAME}/comment:${COMMENTVERSION}
+    networks:
+      - reddit
+
+volumes:
+  post_db:
+
+networks:
+  reddit:
