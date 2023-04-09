@@ -10,6 +10,8 @@ services:
         aliases:
           - post_db
           - comment_db
+    environment:
+        - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
   ui:
     container_name: ui
@@ -18,6 +20,13 @@ services:
       - ${REDDITPORT}:9292/tcp
     networks:
       front_net:
+    logging:
+        driver: "fluentd"
+        options:
+            fluentd-address: localhost:24224
+            tag: service.ui
+    environment:
+        - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
   post:
     container_name: post
@@ -29,6 +38,13 @@ services:
       front_net:
         aliases:
           - post
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: service.post
+    environment:
+        - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
   comment:
     container_name: comment
@@ -40,6 +56,8 @@ services:
       front_net:
         aliases:
           - comment
+    environment:
+        - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
   prometheus:
     image: ${USERNAME}/prometheus
@@ -54,6 +72,8 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention=1d'
+    environment:
+        - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
   node-exporter:
     image: prom/node-exporter:v0.15.2
@@ -69,6 +89,8 @@ services:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+    environment:
+        - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
   mongo-exporter:
     image: percona/mongodb_exporter:2.35.0
@@ -76,20 +98,21 @@ services:
       - back_net
     environment:
       - MONGODB_URI=mongodb://post_db:27017
+      - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
     ports:
       - '9216:9216'
 
-  blackbox-exporter:
-    image: 1and1internet/blackbox_exporter
-    networks:
-      - back_net
-      - front_net
-    ports:
-      - '9115:9115'
-    volumes:
-      - ./blackbox-config.yml:/etc/blackbox_exporter/config.yml
-    command:
-      - '--config.file=/etc/blackbox_exporter/config.yml'
+#  blackbox-exporter:
+#    image: 1and1internet/blackbox_exporter
+#    networks:
+#      - back_net
+#      - front_net
+#    ports:
+#      - '9115:9115'
+#    volumes:
+#      - ./blackbox-config.yml:/etc/blackbox_exporter/config.yml
+#    command:
+#      - '--config.file=/etc/blackbox_exporter/config.yml'
 
 volumes:
   post_db:
