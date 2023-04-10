@@ -1,0 +1,86 @@
+- hosts: slave
+  become: true
+  tasks:
+    - name: Install prerequisites
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce=5:19.03.15~3-0~ubuntu-{{ ansible_distribution_release }}
+          - docker-ce-cli=5:19.03.15~3-0~ubuntu-{{ ansible_distribution_release }}
+          - containerd.io
+        state: present
+
+    - name: Add user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Create Docker daemon configuration file
+      file:
+        path: /etc/docker/daemon.json
+        state: touch
+
+    - name: Configure Docker daemon options
+      lineinfile:
+        path: /etc/docker/daemon.json
+        line: "{{ item.key }}: {{ item.value }}"
+      loop:
+        - { key: "exec-opts", value: ["native.cgroupdriver=systemd"] }
+        - { key: "log-driver", value: "json-file" }
+        - { key: "log-opts", value: {"max-size": "100m"} }
+
+    - name: Start Docker service
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+
+    - name: Add apt-key for Kubernetes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes repository
+      apt_repository:
+        repo: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
+        state: present
+
+    - name: Install Kubernetes packages
+      apt:
+        name: kubelet=1.19.13-00,kubeadm=1.19.13-00,kubectl=1.19.13-00
+        state: present
+        update_cache: yes
+
+    - name: Run kubeadm join command
+      command:
+        cmd: "sudo kubeadm join 51.250.78.232:6443 --token ag2ywu.q361dg5nvkwiouf9 --discovery-token-ca-cert-hash sha256:b5602cdc17329c2f2c8478db081e69e9acdecc73b9dac70d26221f541f1759a8 "
+      register: result
+
+    - name: Display output of kubeadm join command
+      debug:
+        var: result.stdout_lines
