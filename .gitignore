@@ -22,3 +22,4 @@ jdauphant.nginx
 .env
 /docker/docker_password.txt
 /src/.env
+/kubernetes/terraform/terraform.tfvars
