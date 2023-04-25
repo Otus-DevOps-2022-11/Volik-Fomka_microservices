@@ -1,0 +1,12 @@
+---
+service:
+  internalPort: 9292
+  externalPort: 9292
+
+image:
+  repository: shortly4000/comment
+  tag: latest
+
+replicas: 1
+
+databaseHost:

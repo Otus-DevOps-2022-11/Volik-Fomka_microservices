@@ -1,0 +1,12 @@
+---
+service:
+  internalPort: 5000
+  externalPort: 5000
+
+image:
+  repository: shortly4000/post
+  tag: latest
+
+replicas: 1
+
+databaseHost:
