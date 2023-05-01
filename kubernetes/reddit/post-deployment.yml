@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,7 +19,7 @@ spec:
         component: post
     spec:
       containers:
-      - image: shortly4000/reddit_post
+      - image: lbnvd13/post
         name: post
         env:
         - name: POST_DATABASE_HOST

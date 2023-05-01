@@ -1,7 +1,6 @@
----
 apiVersion: apps/v1
 kind: Deployment
-metadata:
+metadata: # Блок метаданных деплоя
   name: ui
   labels:
     app: reddit
@@ -20,7 +19,7 @@ spec:
         component: ui
     spec:
       containers:
-      - image: shortly4000/reddit_ui
+      - image: lbnvd13/ui
         name: ui
         env:
         - name: ENV

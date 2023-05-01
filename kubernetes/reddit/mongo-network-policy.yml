@@ -5,6 +5,7 @@ metadata:
   name: deny-db-traffic
   labels:
     app: reddit
+    component: mongo
 spec:
   podSelector:
     matchLabels:
@@ -18,3 +19,7 @@ spec:
         matchLabels:
           app: reddit
           component: comment
+    - podSelector:
+        matchLabels:
+          app: reddit
+          component: post
